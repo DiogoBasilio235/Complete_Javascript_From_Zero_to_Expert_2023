@@ -155,7 +155,7 @@ GOOD LUCK 😀
 /////////////////////////////////////////////////
 // MAP, FILTER, REDUCE
 // MAP returns a new array containing the results of applying an operation on all original array elements.
-// const eurToUsd = 1.1;
+ const eurToUsd = 1.1;
 // const movementsUSD = movements.map(function(mov){
 //   return mov * eurToUsd;
 // });
@@ -234,31 +234,47 @@ TEST DATA 2: [16, 6, 10, 5, 6, 1, 4]
 GOOD LUCK 😀
 */
 //My solution. Teacher solution not copied as it was the same
-const calcAverageHumanAge = function(dogAges){
-  let humanAges = dogAges.map(function(dogAge) {
-    if (dogAge <= 2){
-      return 2 * dogAge
-    } else {
-      return 16 + dogAge * 4
-    }
-  })
+// const calcAverageHumanAge = function(dogAges){
+//   let humanAges = dogAges.map(function(dogAge) {
+//     if (dogAge <= 2){
+//       return 2 * dogAge
+//     } else {
+//       return 16 + dogAge * 4
+//     }
+//   })
 
-  const adults = humanAges.filter(function(age){
-    return age >= 18;
-  });
+//   const adults = humanAges.filter(function(age){
+//     return age >= 18;
+//   });
 
-  const averageAge = adults.reduce(function(acc, age){
-    return acc + age
-  }, 0) / adults.length;
+//   const averageAge = adults.reduce(function(acc, age){
+//     return acc + age
+//   }, 0) / adults.length;
 
-  return averageAge;
-}
+//   return averageAge;
+// }
 
-const calcAverageHumanAgeOneLiner = function(dogAges) {
-  return dogAges.map(dogAge => dogAge <= 2 ? 2 * dogAge : 16 + dogAge * 4)
-    .filter(age => age >= 18)
-    .reduce((acc, age, _, arr) => acc + age / arr.length, 0);
-}
+// const calcAverageHumanAgeOneLiner = function(dogAges) {
+//   return dogAges.map(dogAge => dogAge <= 2 ? 2 * dogAge : 16 + dogAge * 4)
+//     .filter(age => age >= 18)
+//     .reduce((acc, age, _, arr) => acc + age / arr.length, 0);
+// }
 
-console.log(calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]));
-console.log(calcAverageHumanAgeOneLiner([16, 6, 10, 5, 6, 1, 4]));
+// console.log(calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]));
+// console.log(calcAverageHumanAgeOneLiner([16, 6, 10, 5, 6, 1, 4]));
+
+// CHAINING OPERATIONS
+const totalDepositsUSD = movements.filter(mov => mov > 0).map(mov => mov * eurToUsd).reduce((acc, cur) => acc + cur, 0);
+console.log(totalDepositsUSD);
+
+// When chaining operations, it can become dificult to know where a bug was made
+const totalDepositsUSDBug = movements
+.filter(mov => mov < 0) // Bug here where we only take the negative numbers. Withdrawals instead of Deposits
+//.map(mov => mov * eurToUsd) // Original
+.map((mov, i, arr) => {
+  console.log(arr); // This is one of the use cases where it is usefull to have access to the arr parameter 
+  return mov * eurToUsd
+})
+.reduce((acc, cur) => acc + cur, 0);
+
+console.log(totalDepositsUSDBug);
