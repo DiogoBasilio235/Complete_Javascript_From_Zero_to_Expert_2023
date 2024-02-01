@@ -335,8 +335,90 @@ GOOD LUCK 😀
 // FIND
 // filter() retuns all the elements that satisfy a condition in a new array,
 // find() only returns the first occurrence.
-const firstWithdrawal = movements.find(mov => mov < 0);
-console.log(firstWithdrawal);
 
-const account = accounts.find(acc => acc.owner === "Jessica Davis")
-console.log(account);
+// const firstWithdrawal = movements.find(mov => mov < 0);
+// console.log(firstWithdrawal);
+
+// const account = accounts.find(acc => acc.owner === "Jessica Davis")
+// console.log(account);
+
+// INCLUDES / SOME / EVERY
+//Includes() tests for equality
+// console.log(movements.includes(-130)); // true
+
+// Some() tests for a condition
+// console.log(movements.some(mov => mov > 1500)); // true
+
+// If every element passes a condition, it returns true
+// console.log(movements.every(mov => mov > 0)); // false
+// console.log(account4.movements.every(mov => mov > 0)); // true
+
+// Separate callback
+// const deposit = mov => mov > 0;
+// console.log(movements.some(deposit)); // true
+// console.log(movements.every(deposit)); // false
+// console.log(movements.filter(deposit)); // [200, 450, 3000, 70, 1300]
+
+// FLAT && FLATMAP
+// It flatens the inner arrays into a single array
+// const arr = [[1, 2, 3], [4, 5, 6], 7, 8];
+// console.log(arr.flat()); // [1, 2, 3, 4, 5, 6, 7, 8]
+
+// We can adjust the level of how deep we want the flat to go.
+// const arrDeeper = [[[1, 2], 3], [4, [5, 6]], 7, 8];
+// console.log(arrDeeper.flat(2)); //[1, 2, 3, 4, 5, 6, 7, 8]
+
+// We can also get the overall balance of the bank, this time without chaining
+// const accountMovements = accounts.map(acc => acc.movements);
+// console.log(accountMovements);
+
+// const allMovements = accountMovements.flat();
+// console.log(allMovements);
+
+// const bankOverallBalance = allMovements.reduce((acc, mov) => acc + mov, 0);
+// console.log(bankOverallBalance); // 17840
+
+// Using a map() and a flat() together as shown above is a very common procedure.
+// That is why the method flatMap() was created. This time we use chaining operators.
+// flatMap() only goes one level deep. For futher levels, use the flat(*).
+// const overalBalanceChained = accounts.flatMap(acc => acc.movements).reduce((acc, mov) => acc + mov, 0);
+// console.log(overalBalanceChained); // 17840
+
+
+// SORTING ARRAYS
+// sort() mutates the original array
+const owners = ["Jonas", "Zack", "Adam", "Martha"];
+console.log(owners.sort());
+
+// sort() works differently with numbers because it converts everything to strings
+// and then it does the sorting itself
+console.log(movements.sort()); // [-130, -400, -650, 1300, 200, 3000, 450, 70]
+
+// We can pass a compare callback function with 2 arguments for it to work properly with numbers
+// The sort() keeps looping through the array and applying the callback function until everything is in ascending order
+console.log(
+  movements.sort((currentValue, nextValue) => {
+  if (currentValue > nextValue) return 1; // the number here just needs to be bigger than 0.(keep order)
+  if (currentValue < nextValue) return -1; // The number here just needs to be smaller than 0.(switch order)
+})
+);
+
+// Simplified
+console.log(
+  movements.sort((a, b) => a - b)
+);
+
+// We can also do it in a descending order this way:
+console.log(
+  movements.sort((currentValue, nextValue) => {
+  if (currentValue > nextValue) return -1;
+  if (currentValue < nextValue) return 1;
+})
+);
+
+// Simplified
+console.log(
+  movements.sort((a, b) => b - a)
+);
+
+

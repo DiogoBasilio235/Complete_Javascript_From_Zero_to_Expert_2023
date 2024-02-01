@@ -63,10 +63,13 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function(movements){
+const displayMovements = function(movements, sort = false) { // sort is an optional parameter, defaulted to false
   containerMovements.innerHTML = "";
 
-  movements.forEach(function(mov, i) {
+  // We create a copy of the movements array with slice() so we dont modify the original array
+  const movs = sort ? movements.slice().sort((a,b) => a - b) : movements;
+
+  movs.forEach(function(mov, i) {
     const type = mov > 0 ? "deposit" : "withdrawal";
     const html = `
     <div class="movements__row">
@@ -139,6 +142,17 @@ btnLogin.addEventListener("click", function(event){
   }
 });
 
+btnLoan.addEventListener("click", function(event){
+  event.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+  // We can only request a loan if there is a movement that is higher or equal to 10% of the loan
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount / 10)){
+    currentAccount.movements.push(amount);
+  }
+  inputLoanAmount.value = "";
+  updateUI(currentAccount);
+});
 
 btnTransfer.addEventListener("click", function(event){
   event.preventDefault();
@@ -170,5 +184,11 @@ btnClose.addEventListener("click", function(event){
     }
     inputCloseUsername.value = inputClosePin.value = "";
     labelWelcome.textContent = "Log in to get started";
-
 });
+
+let sorted = false;
+btnSort.addEventListener("click", function(event){
+  event.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
+})
