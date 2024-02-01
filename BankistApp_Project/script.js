@@ -64,28 +64,40 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 const displayMovements = function(movements){
-
   containerMovements.innerHTML = "";
 
   movements.forEach(function(mov, i) {
     const type = mov > 0 ? "deposit" : "withdrawal";
-
     const html = `
     <div class="movements__row">
       <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
-      <div class="movements__value">${mov}</div>
+      <div class="movements__value">${mov}€</div>
     </div>`;
     //This method accepts 2 parameter (position relative to the selected element, text). Check documentation
     containerMovements.insertAdjacentHTML("afterbegin", html);
   });
 }
-displayMovements(account1.movements);
 
-const calcDisplayBalance = function(movements){
-  const balance = movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance} EUR`
+const calcDisplayBalance = function(account){
+  account.balance = account.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${account.balance}€`;
 }
-calcDisplayBalance(account1.movements);
+
+const calcDisplaySummary = function(account){
+  const incomes = account.movements.filter(mov => mov > 0)
+  .reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${incomes}€`;
+
+  const expenses = account.movements.filter(mov => mov < 0)
+  .reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(expenses)}€`;
+
+  const interest = account.movements.filter(mov => mov > 0)
+  .map(deposit => deposit * account.interestRate / 100)
+  .filter(int => int >= 1) // in th case the bank only pays interest when is above 1 euro
+  .reduce((acc, int) => acc + int, 0);
+  labelSumInterest.textContent = `${interest}€`;
+}
 
 const createUserNames = function (accs) {
   accs.forEach(function(acc){
@@ -93,3 +105,70 @@ const createUserNames = function (accs) {
   });
 };
 createUserNames(accounts);
+
+const updateUI = function(account){
+      //Display movements
+      displayMovements(account.movements);
+
+      //Display balance
+      calcDisplayBalance(account);
+  
+      //Display summary
+      calcDisplaySummary(account);
+}
+
+let currentAccount;
+btnLogin.addEventListener("click", function(event){
+  // The default behaviour in an HTML form is the page reloads when clicked the submit button.
+  // With preventDefault() we can prevent the reload
+  event.preventDefault();
+  currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value);
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    //Display UI and Message
+    labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ")[0]}`;
+    containerApp.style.opacity = 100;
+
+    //clear input fields
+    inputLoginUsername.value = inputLoginPin.value = "";
+    inputLoginPin.blur();
+
+    //update UI
+    updateUI(currentAccount);
+
+  }
+});
+
+
+btnTransfer.addEventListener("click", function(event){
+  event.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAccount = accounts.find(acc => acc.username ===  inputTransferTo.value);
+  inputTransferAmount.value = inputTransferTo.value = "";
+
+  if(amount > 0 && receiverAccount && 
+    currentAccount.balance >= amount && 
+    receiverAccount?.username !== currentAccount.username) 
+  {
+    currentAccount.movements.push(-amount);
+    receiverAccount.movements.push(amount);
+  }
+
+  updateUI(currentAccount);
+})
+
+btnClose.addEventListener("click", function(event){
+  event.preventDefault();
+
+  if(currentAccount.username === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value))
+    {
+      const index = accounts.findIndex(acc => acc.username === currentAccount.username);
+
+      accounts.splice(index, 1);
+      containerApp.style.opacity = 0;
+    }
+    inputCloseUsername.value = inputClosePin.value = "";
+    labelWelcome.textContent = "Log in to get started";
+
+});

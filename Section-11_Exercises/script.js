@@ -4,6 +4,37 @@
 /////////////////////////////////////////////////
 // LECTURES
 
+// Data
+const account1 = {
+  owner: 'Jonas Schmedtmann',
+  movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
+  interestRate: 1.2, // %
+  pin: 1111,
+};
+
+const account2 = {
+  owner: 'Jessica Davis',
+  movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
+  interestRate: 1.5,
+  pin: 2222,
+};
+
+const account3 = {
+  owner: 'Steven Thomas Williams',
+  movements: [200, -200, 340, -300, -20, 50, 400, -460],
+  interestRate: 0.7,
+  pin: 3333,
+};
+
+const account4 = {
+  owner: 'Sarah Smith',
+  movements: [430, 1000, 700, 50, 90],
+  interestRate: 1,
+  pin: 4444,
+};
+
+const accounts = [account1, account2, account3, account4];
+
 const currencies = new Map([
   ['USD', 'United States dollar'],
   ['EUR', 'Euro'],
@@ -264,17 +295,48 @@ GOOD LUCK 😀
 // console.log(calcAverageHumanAgeOneLiner([16, 6, 10, 5, 6, 1, 4]));
 
 // CHAINING OPERATIONS
-const totalDepositsUSD = movements.filter(mov => mov > 0).map(mov => mov * eurToUsd).reduce((acc, cur) => acc + cur, 0);
-console.log(totalDepositsUSD);
+// const totalDepositsUSD = movements.filter(mov => mov > 0).map(mov => mov * eurToUsd).reduce((acc, cur) => acc + cur, 0);
+// console.log(totalDepositsUSD);
 
 // When chaining operations, it can become dificult to know where a bug was made
-const totalDepositsUSDBug = movements
-.filter(mov => mov < 0) // Bug here where we only take the negative numbers. Withdrawals instead of Deposits
+// const totalDepositsUSDBug = movements
+// .filter(mov => mov < 0) // Bug here where we only take the negative numbers. Withdrawals instead of Deposits
 //.map(mov => mov * eurToUsd) // Original
-.map((mov, i, arr) => {
-  console.log(arr); // This is one of the use cases where it is usefull to have access to the arr parameter 
-  return mov * eurToUsd
-})
-.reduce((acc, cur) => acc + cur, 0);
+// .map((mov, i, arr) => {
+//   console.log(arr); // This is one of the use cases where it is usefull to have access to the arr parameter 
+//   return mov * eurToUsd
+// })
+// .reduce((acc, cur) => acc + cur, 0);
 
-console.log(totalDepositsUSDBug);
+// console.log(totalDepositsUSDBug);
+
+///////////////////////////////////////
+// Coding Challenge #3
+
+/* 
+Rewrite the 'calcAverageHumanAge' function from the previous challenge, but this time as an arrow function, and using chaining!
+
+TEST DATA 1: [5, 2, 4, 1, 15, 8, 3]
+TEST DATA 2: [16, 6, 10, 5, 6, 1, 4]
+
+GOOD LUCK 😀
+*/
+
+//My solution
+// const calcAverageHumanAgeChained = dogAges => 
+//   dogAges.map(dogAge => dogAge <= 2 ? 2 * dogAge : 16 + dogAge * 4)
+//     .filter(age => age >= 18)
+//     .reduce((acc, age, _, arr) => acc + age / arr.length, 0);
+
+// console.log(calcAverageHumanAgeChained([5, 2, 4, 1, 15, 8, 3]));
+// console.log(calcAverageHumanAgeChained([16, 6, 10, 5, 6, 1, 4]));
+
+
+// FIND
+// filter() retuns all the elements that satisfy a condition in a new array,
+// find() only returns the first occurrence.
+const firstWithdrawal = movements.find(mov => mov < 0);
+console.log(firstWithdrawal);
+
+const account = accounts.find(acc => acc.owner === "Jessica Davis")
+console.log(account);
