@@ -387,38 +387,222 @@ GOOD LUCK 😀
 
 // SORTING ARRAYS
 // sort() mutates the original array
-const owners = ["Jonas", "Zack", "Adam", "Martha"];
-console.log(owners.sort());
+// const owners = ["Jonas", "Zack", "Adam", "Martha"];
+// console.log(owners.sort());
 
 // sort() works differently with numbers because it converts everything to strings
 // and then it does the sorting itself
-console.log(movements.sort()); // [-130, -400, -650, 1300, 200, 3000, 450, 70]
+// console.log(movements.sort()); // [-130, -400, -650, 1300, 200, 3000, 450, 70]
 
 // We can pass a compare callback function with 2 arguments for it to work properly with numbers
 // The sort() keeps looping through the array and applying the callback function until everything is in ascending order
-console.log(
-  movements.sort((currentValue, nextValue) => {
-  if (currentValue > nextValue) return 1; // the number here just needs to be bigger than 0.(keep order)
-  if (currentValue < nextValue) return -1; // The number here just needs to be smaller than 0.(switch order)
-})
-);
+// console.log(
+//   movements.sort((currentValue, nextValue) => {
+//   if (currentValue > nextValue) return 1; // the number here just needs to be bigger than 0.(keep order)
+//   if (currentValue < nextValue) return -1; // The number here just needs to be smaller than 0.(switch order)
+// })
+// );
 
 // Simplified
-console.log(
-  movements.sort((a, b) => a - b)
-);
+// console.log(
+//   movements.sort((a, b) => a - b)
+// );
 
 // We can also do it in a descending order this way:
-console.log(
-  movements.sort((currentValue, nextValue) => {
-  if (currentValue > nextValue) return -1;
-  if (currentValue < nextValue) return 1;
-})
-);
+// console.log(
+//   movements.sort((currentValue, nextValue) => {
+//   if (currentValue > nextValue) return -1;
+//   if (currentValue < nextValue) return 1;
+// })
+// );
 
 // Simplified
-console.log(
-  movements.sort((a, b) => b - a)
-);
+// console.log(
+//   movements.sort((a, b) => b - a)
+// );
 
+
+// MORE ARRAY METHODS
+
+// This will create an empty array with 7 indexes
+// const x = new Array(7);
+// console.log(x);
+
+// FILL
+// We can call fill() on the array and fill it with the data we want,
+// and wwe can also say at which index we want to start to fill it
+// as well as the finishing point. fill() mutates the original array
+//console.log(x.fill(1, 3, 5));// [empty, empty, empty, 1, 1, empty, empty]
+
+// we can also fill it on arrays with data. Only the first parameter is mandatory
+//const arr = [1, 2, 3, 4, 5, 6, 7];
+//console.log(arr.fill(23, 2, 6)); //[1, 2, 23, 23, 23, 23, 7]
+
+// FROM
+// Does the same thing as the new Array() but with a specified length
+// and a callback function
+// const y = Array.from({length: 7 }, () => 1); //[1, 1, 1, 1, 1, 1, 1, 1]
+// console.log(y);
+
+// const z = Array.from({length: 7 }, (curr, i) => i + 1); // [1, 2, 3, 4, 5, 6, 7]
+// console.log(z);
+
+///////////////////////////////////////
+// Array Methods Practice
+
+// 1. Get the sum of all deposits made in the bank
+// const bankDepositsSum = accounts.flatMap(acc => acc.movements)
+// .filter(mov => mov > 0)
+// .reduce((sum, cur) => sum + cur, 0);
+// console.log(bankDepositsSum);
+
+// 2. Get how many deposits of 1000€ and higher were made
+// let numDeposits1000 = accounts.flatMap(acc => acc.movements)
+// .filter(mov => mov >= 1000).length;
+// console.log(numDeposits1000);
+
+// or
+// numDeposits1000 = accounts.flatMap(acc => acc.movements)
+// .reduce((count, current) => current >= 1000 ? count + 1 : count, 0)
+
+// console.log(numDeposits1000);
+
+// 3. Get the sum of all deposits and all withdrawals.
+// In this case, sums is the accumulator, and we always need to return the accumulator 
+// const sums = accounts
+//   .flatMap(acc => acc.movements)
+//   .reduce(
+//     (sums, curr) => {
+//   curr > 0 ? (sums.deposits += curr) : (sums.withdrawals += curr);
+//   return sums;
+// }, 
+//   {deposits: 0, withdrawals : 0});
+
+// console.log(sums);
+
+// 4. this is a nice title -> This Is a Nice Title
+
+// const convertTitleCase = function (title) {
+//   const capitalize = str => str[0].toUpperCase() + str.slice(1);
+//   const exceptions = ["a", "an", "the", "but", "or", "on", "in", "with", "and"];
+
+//   const titleCase = title
+//   .toLowerCase()
+//   .split(" ")
+//   .map(word => 
+//     (exceptions.includes(word) ? 
+//     word : capitalize(word))
+//     ).join(" ");
+
+//   return capitalize(titleCase);
+
+// }
+// console.log(convertTitleCase("this is a nice title"));
+// console.log(convertTitleCase("this is a LONG title but not too long"));
+// console.log(convertTitleCase("and here is another title with an Example"));
+
+///////////////////////////////////////
+// Coding Challenge #4
+
+/* 
+Julia and Kate are still studying dogs, and this time they are studying if dogs are eating too much or too little.
+Eating too much means the dog's current food portion is larger than the recommended portion, and eating too little is the opposite.
+Eating an okay amount means the dog's current food portion is within a range 10% above and 10% below the recommended portion (see hint).
+
+1. Loop over the array containing dog objects, and for each dog, calculate the recommended food portion and add it to the object as a new property. 
+  Do NOT create a new array, simply loop over the array. Forumla: recommendedFood = weight ** 0.75 * 28. (The result is in grams of food, and the weight needs to be in kg)
+2. Find Sarah's dog and log to the console whether it's eating too much or too little. 
+  HINT: Some dogs have multiple owners, so you first need to find Sarah in the owners array, and so this one is a bit tricky (on purpose) 🤓
+3. Create an array containing all owners of dogs who eat too much ('ownersEatTooMuch') and an array with all owners of dogs who eat too little ('ownersEatTooLittle').
+4. Log a string to the console for each array created in 3., like this: "Matilda and Alice and Bob's dogs eat too much!" and "Sarah and John and Michael's dogs eat too little!"
+5. Log to the console whether there is any dog eating EXACTLY the amount of food that is recommended (just true or false)
+6. Log to the console whether there is any dog eating an OKAY amount of food (just true or false)
+7. Create an array containing the dogs that are eating an OKAY amount of food (try to reuse the condition used in 6.)
+8. Create a shallow copy of the dogs array and sort it by recommended food portion in an ascending order (keep in mind that the portions are inside the array's objects)
+
+HINT 1: Use many different tools to solve these challenges, you can use the summary lecture to choose between them 😉
+HINT 2: Being within a range 10% above and below the recommended portion means: current > (recommended * 0.90) && current < (recommended * 1.10). 
+  Basically, the current portion should be between 90% and 110% of the recommended portion.
+
+TEST DATA:
+const dogs = [
+  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+  { weight: 8, curFood: 200, owners: ['Matilda'] },
+  { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+  { weight: 32, curFood: 340, owners: ['Michael'] }
+];
+
+GOOD LUCK 😀
+*/
+// My solution
+// 1.
+const dogs = [
+  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+  { weight: 8, curFood: 200, owners: ['Matilda'] },
+  { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+  { weight: 32, curFood: 340, owners: ['Michael'] }
+];
+
+const calculateRecommendedFood = function(dogs){
+  dogs.forEach(dog => {
+    dog.recFood = Math.trunc(dog.weight ** 0.75 * 28);
+  });
+  return dogs;
+};
+
+const sarahDog = function(dogs){
+  const dog = dogs.filter(dog => dog.owners.includes("Sarah"))[0];
+  if (dog.curFood < (dog.recFood * 0.9)){
+    return "Sarah's dog is eating too litle."
+  } else if (dog.curFood > (dog.recFood * 1.1)){
+    return "Sarah's dog is eating too much."
+  } else{
+    return "Sarah's dog is eating the right amount."
+  }
+} 
+
+const findTheCulprits = function(dogs){
+  let ownersEatTooLittle = [];
+  let ownersEatTooMuch = [];
+
+  dogs.forEach(dog => {
+    if (dog.curFood < (dog.recFood * 0.9)){
+      dog.owners.forEach(owner=>
+        {
+          ownersEatTooLittle.push(owner)
+        });
+
+    } else if (dog.curFood > (dog.recFood * 1.1)){
+      dog.owners.forEach(owner=>
+        {
+          ownersEatTooMuch.push(owner)
+        });
+    } 
+  });
+
+  let result1 =""; 
+  let result2 =""; 
+  console.log(ownersEatTooLittle);
+  console.log(ownersEatTooMuch);
+  for (let i = 0; i < ownersEatTooLittle.length; i++){
+
+  }
+  console.log(result1)
+
+}
+
+
+// 3. Get the sum of all deposits and all withdrawals.
+// In this case, sums is the accumulator, and we always need to return the accumulator 
+// const sums = accounts
+//   .flatMap(acc => acc.movements)
+//   .reduce(
+//     (sums, curr) => {
+//   curr > 0 ? (sums.deposits += curr) : (sums.withdrawals += curr);
+//   return sums;
+// }, 
+//   {deposits: 0, withdrawals : 0});
+console.log(calculateRecommendedFood(dogs));
+console.log(sarahDog(dogs));
+console.log(findTheCulprits(dogs));
 
