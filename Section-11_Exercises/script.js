@@ -571,7 +571,6 @@ const findTheCulprits = function(dogs){
         {
           ownersEatTooLittle.push(owner)
         });
-
     } else if (dog.curFood > (dog.recFood * 1.1)){
       dog.owners.forEach(owner=>
         {
@@ -580,29 +579,58 @@ const findTheCulprits = function(dogs){
     } 
   });
 
-  let result1 =""; 
-  let result2 =""; 
-  console.log(ownersEatTooLittle);
-  console.log(ownersEatTooMuch);
+  let result1 = ""; 
+  let result2 = ""; 
   for (let i = 0; i < ownersEatTooLittle.length; i++){
-
+    if (i + 1 === ownersEatTooLittle.length) {
+      result1 = result1 + ownersEatTooLittle[i] + "'s dogs eat too little!"
+    }
+    else {
+      result1 = result1 + ownersEatTooLittle[i] + " and ";
+    }
   }
-  console.log(result1)
+  console.log(result1);
 
+  for (let i = 0; i < ownersEatTooMuch.length; i++){
+    if (i + 1 === ownersEatTooMuch.length) {
+      result2 = result2 + ownersEatTooMuch[i] + "'s dogs eat too much!"
+    }
+    else {
+      result2 = result2 + ownersEatTooMuch[i] + " and ";
+    }
+  }
+  console.log(result2);
 }
 
+const isAnyDogEatingProperly = function(dogs) {
+  let result = [];
+  dogs.forEach(dog => {
+    if(dog.curFood === dog.recFood)
+      result.push(dog);
+  })
+  return result.length > 0 ? true : false;
+}
 
-// 3. Get the sum of all deposits and all withdrawals.
-// In this case, sums is the accumulator, and we always need to return the accumulator 
-// const sums = accounts
-//   .flatMap(acc => acc.movements)
-//   .reduce(
-//     (sums, curr) => {
-//   curr > 0 ? (sums.deposits += curr) : (sums.withdrawals += curr);
-//   return sums;
-// }, 
-//   {deposits: 0, withdrawals : 0});
+const isAnyDogEatingOkay = function(dogs) {
+  let result = [];
+  dogs.forEach(dog => {
+    if(dog.curFood >= (dog.recFood * 0.9) && dog.curFood <= (dog.recFood * 1.1))
+      result.push(dog);
+  })
+  return result.length > 0 ? true : false;
+}
+
+const sortByRecFoodPortions = function(dogs){
+  let arrToSort = [...dogs];
+  return arrToSort.sort((a, b) => a.recFood - b.recFood);
+}
+
 console.log(calculateRecommendedFood(dogs));
 console.log(sarahDog(dogs));
-console.log(findTheCulprits(dogs));
+findTheCulprits(dogs);
+console.log(isAnyDogEatingProperly(dogs));
+console.log(isAnyDogEatingOkay(dogs));
+console.log(sortByRecFoodPortions(dogs));
+
+
 
