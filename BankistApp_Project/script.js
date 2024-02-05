@@ -108,18 +108,27 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function(movements, sort = false) { // sort is an optional parameter, defaulted to false
+const displayMovements = function(acc, sort = false) { // sort is an optional parameter, defaulted to false
   containerMovements.innerHTML = "";
 
   // We create a copy of the movements array with slice() so we dont modify the original array
-  const movs = sort ? movements.slice().sort((a,b) => a - b) : movements;
+  const movs = sort ? acc.movements.slice().sort((a,b) => a - b) : acc.movements;
 
   movs.forEach(function(mov, i) {
     const type = mov > 0 ? "deposit" : "withdrawal";
+
+    const date = new Date (acc.movementsDates[i]);
+    const day = `${date.getDate()}`.padStart(2, 0);
+    const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    const year = date.getFullYear();
+
+    const displayDate = `${day}/${month}/${year}`
+
     const html = `
     <div class="movements__row">
       <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
-      <div class="movements__value">${mov}€</div>
+      <div class="movements__date">${displayDate}</div>
+      <div class="movements__value">${mov.toFixed(2)}€</div>
     </div>`;
     //This method accepts 2 parameter (position relative to the selected element, text). Check documentation
     containerMovements.insertAdjacentHTML("afterbegin", html);
@@ -128,23 +137,23 @@ const displayMovements = function(movements, sort = false) { // sort is an optio
 
 const calcDisplayBalance = function(account){
   account.balance = account.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${account.balance}€`;
+  labelBalance.textContent = `${account.balance.toFixed(2)}€`;
 }
 
 const calcDisplaySummary = function(account){
   const incomes = account.movements.filter(mov => mov > 0)
   .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes}€`;
+  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
 
   const expenses = account.movements.filter(mov => mov < 0)
   .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(expenses)}€`;
+  labelSumOut.textContent = `${Math.abs(expenses).toFixed(2)}€`;
 
   const interest = account.movements.filter(mov => mov > 0)
   .map(deposit => deposit * account.interestRate / 100)
   .filter(int => int >= 1) // in th case the bank only pays interest when is above 1 euro
   .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest}€`;
+  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
 }
 
 const createUserNames = function (accs) {
@@ -156,7 +165,7 @@ createUserNames(accounts);
 
 const updateUI = function(account){
       //Display movements
-      displayMovements(account.movements);
+      displayMovements(account);
 
       //Display balance
       calcDisplayBalance(account);
@@ -166,6 +175,12 @@ const updateUI = function(account){
 }
 
 let currentAccount;
+
+// FAKE ALWAYS LOGGED IN
+currentAccount = account1;
+updateUI(currentAccount);
+containerApp.style.opacity = 100;
+
 btnLogin.addEventListener("click", function(event){
   // The default behaviour in an HTML form is the page reloads when clicked the submit button.
   // With preventDefault() we can prevent the reload
@@ -177,23 +192,34 @@ btnLogin.addEventListener("click", function(event){
     labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ")[0]}`;
     containerApp.style.opacity = 100;
 
+    // Current Date
+    const now = new Date();
+    const day = `${now.getDate()}`.padStart(2, 0);
+    const month = `${now.getMonth() + 1}`.padStart(2, 0);
+    const year = now.getFullYear();
+    const hours = now.getHours();
+    const minutes = `${now.getMinutes()}`.padStart(2, 0);
+
+    labelDate.textContent = `${day}/${month}/${year}, ${hours}:${minutes}`
+
     //clear input fields
     inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur();
 
     //update UI
     updateUI(currentAccount);
-
   }
 });
 
 btnLoan.addEventListener("click", function(event){
   event.preventDefault();
 
-  const amount = +inputLoanAmount.value;
+  const amount = Math.floor(inputLoanAmount.value);
+
   // We can only request a loan if there is a movement that is higher or equal to 10% of the loan
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount / 10)){
     currentAccount.movements.push(amount);
+    currentAccount.movementsDates.push(new Date().toISOString());
   }
   inputLoanAmount.value = "";
   updateUI(currentAccount);
@@ -211,9 +237,12 @@ btnTransfer.addEventListener("click", function(event){
   {
     currentAccount.movements.push(-amount);
     receiverAccount.movements.push(amount);
-  }
 
-  updateUI(currentAccount);
+    currentAccount.movementsDates.push(new Date().toISOString());
+    currentAccount.movementsDates.push(new Date().toISOString());
+
+    updateUI(currentAccount);
+  }
 })
 
 btnClose.addEventListener("click", function(event){
@@ -234,12 +263,26 @@ btnClose.addEventListener("click", function(event){
 let sorted = false;
 btnSort.addEventListener("click", function(event){
   event.preventDefault();
-  displayMovements(currentAccount.movements, !sorted);
+  displayMovements(currentAccount, !sorted);
   sorted = !sorted;
 });
 
+
 // labelBalance.addEventListener('click', function(event){
 //   const movementsUI = Array.from(document.querySelectorAll(".movements__value"), 
-//   elem => +elem.textContent.replace("€", "")));
+//   elem => +elem.textContent.replace("€", ""));
 //   console.log(movementsUI);
 // });
+
+// labelBalance.addEventListener('click', function(){
+//   [...document.querySelectorAll(".movements__row")].forEach(function(row, i){
+//     if (i % 2 === 0)
+//       row.style.backgroundColor = "orangered";
+    
+//     if (i % 3 === 0)
+//       row.style.backgroundColor = "blue";
+//   })
+// });
+
+
+
