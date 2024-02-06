@@ -198,10 +198,93 @@ const accounts = [account1, account2];
 // console.log(future);
 
 // CALCULATIONS ON DATES
-const future = new Date(2037, 10, 19, 15, 23);
-console.log(Number(future));
+// const future = new Date(2037, 10, 19, 15, 23);
+// console.log(Number(future));
 
 // We get the abslute difference, even if the difference is negative, and divide it by the timestamp creation value.
-const calcDaysPassed = (date1, date2) => Math.abs(date2 - date1) / (24 * 60 * 60 * 1000);
+// const calcDaysPassed = (date1, date2) => Math.abs(date2 - date1) / (24 * 60 * 60 * 1000);
+// console.log(calcDaysPassed(new Date(2037, 3, 14), new Date(2037, 3, 4)));
 
-console.log(calcDaysPassed(new Date(2037, 3, 14), new Date(2037, 3, 4)));
+// INTERNATIONALIZING DATES
+// const now = new Date();
+// const day = `${now.getDate()}`.padStart(2, 0);
+// const month = `${now.getMonth() + 1}`.padStart(2, 0);
+// const year = now.getFullYear();
+// const hours = now.getHours();
+// const minutes = `${now.getMinutes()}`.padStart(2, 0);
+// const oldDate = `${day}/${month}/${year}, ${hours}:${minutes}`;
+
+// With the Intl API, writing the "language-Country" will create a formatter for this language.
+// You can search for other countries on "iso language code table-lingoes"
+// const internationalDate = new Intl.DateTimeFormat("en-US").format(now);
+
+// You can add a bit more to the date with an options object
+// const options = {
+//   hour: "numeric",
+//   minute: "numeric",
+//   day: "numeric",
+//   month: "long",
+//   year: "numeric",
+//   weekday: "long"
+// }
+// const italyDate = new Intl.DateTimeFormat("it-IT", options).format(now);
+
+// We can also display the date according to the position of the user
+// const locale = navigator.language;
+// const localeDate =  new Intl.DateTimeFormat(locale, options).format(now);
+
+// console.log(oldDate);
+// console.log(internationalDate);
+// console.log(italyDate);
+// console.log(localeDate);
+
+// INTERNATIONALIZING NUMBERS
+// const num = 3884764.23;
+// const options = {
+//   style: "currency",
+//   currency: "EUR",
+//   // this will remove the grouping of the number in case of millions, hendreds, etc. 
+//   useGrouping: "false" 
+//   //style: "unit",
+//   //unit: "mile-per-hour"
+//   //unit: "celsius"
+// }
+// console.log("US: ",new Intl.NumberFormat("en-US", options).format(num));
+// console.log("Germany: ",new Intl.NumberFormat("de-DE", options).format(num));
+// console.log("Syria: ",new Intl.NumberFormat("ar-SY", options).format(num));
+
+// TIMERS: SETTIMEOUT 
+// We define first a callback function to be called when the 2nd argument (in miliseconds) will pass
+// setTimeout(() => console.log("Here is your pizza! 🍕"), 3000);
+
+// We can also add as many arguments as we want to our setTimeout(calback function, waiting time, argument 1, argument 2)
+// setTimeout((ing1, ing2) => 
+//   console.log(`Here is your pizza 🍕 with ${ing1} and ${ing2}`), 
+//   3000, 
+//   "olives", 
+//   "spinash");
+
+// We can also cancel our setTimeout
+// const ingredients = ["burratta", "pesto", "pommodoro", "mortadella"];
+// const vegetarianPizza = setTimeout((ing1, ing2) => 
+//   console.log(`Here is your pizza 🍕 with ${ing1} and ${ing2}`), 
+//   3000, 
+//   ...ingredients);
+
+// Giving a name to the timeout and a condition, we use the function clearTimeout to stop it
+// if(ingredients.includes("mortadella")){
+//   clearTimeout(vegetarianPizza);
+// }
+// console.log("Waiting...");
+
+
+// TIMES: SETINTERVAL 
+// With setInterval(), a calback function is executed everytime the timer reaches its end.
+// setInterval(function(){
+//   const now = new Date();
+//   console.log(now)
+// }, 1000);
+
+// IMPLEMENTING A COUNTDOWN TIMER
+
+
