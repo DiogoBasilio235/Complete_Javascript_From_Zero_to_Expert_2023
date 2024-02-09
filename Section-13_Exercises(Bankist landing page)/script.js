@@ -62,7 +62,7 @@ document.addEventListener('keydown', function (e) {
 // console.log(document.body);
 
 // returns the first matched element
-const header =  document.querySelector(".header");
+// const header =  document.querySelector(".header");
 
 // returns all .section elements in a Node list
 // const sections = document.querySelectorAll(".section");
@@ -265,30 +265,148 @@ However we can set up event listeners in a way to listen to events in the captur
 */
 
 // In practise
-const randomInt = (min, max) => Math.floor(Math.random() * (max-min+1) + min);
-const randomColor = () => `rgb(${randomInt(0, 255)},${randomInt(0, 255)},${randomInt(0, 255)})`;
+// const randomInt = (min, max) => Math.floor(Math.random() * (max-min+1) + min);
+// const randomColor = () => `rgb(${randomInt(0, 255)},${randomInt(0, 255)},${randomInt(0, 255)})`;
 
 // Clicking on the Child, all 3 elements change color because the target in all 3 elements is the same.
 // As it is the same, it "bubbles" form the nav__link element until the nav element, 
 // making us being able to handle the event in all elements
-document.querySelector(".nav__link").addEventListener("click", function(event) {
-  this.style.backgroundColor = randomColor();
-  console.log("Link:", event.target);
-});
+// document.querySelector(".nav__link").addEventListener("click", function(event) {
+//   this.style.backgroundColor = randomColor();
+//   console.log("Link:", event.target);
+// });
 
 // Clicking on Parent, only this and the Grandparent change color
-document.querySelector(".nav__links").addEventListener("click", function(event) {
-  this.style.backgroundColor = randomColor();
-  console.log("Container:", event.target);
+// document.querySelector(".nav__links").addEventListener("click", function(event) {
+//   this.style.backgroundColor = randomColor();
+//   console.log("Container:", event.target);
 
   // Stop propagation, generaly not a good idea
   // event.stopPropagation();
-});
+// });
 
 // Clicking on Grandparent, only this element changes color
-document.querySelector(".nav").addEventListener("click", function(event) {
-  this.style.backgroundColor = randomColor();
-  console.log("Nav:", event.target);
-// Changing the "use capture" parameter to true, the event handler 
-// won't listen to bubbling events, but instead to capturing events.
-}, true);
+// document.querySelector(".nav").addEventListener("click", function(event) {
+//   this.style.backgroundColor = randomColor();
+//   console.log("Nav:", event.target);
+// // Changing the "use capture" parameter to true, the event handler 
+// // won't listen to bubbling events, but instead to capturing events.
+// }, true);
+
+// EVENT DELEGATION works in 2 steps:
+// 1. Add event listener to common parent element
+// 2. Determine what element originated that event and work with that element
+document.querySelector(".nav__links").addEventListener("click", function (event){
+  event.preventDefault();
+  // We can easily find where the event happened with the "event.target" property
+  // Matching strategy
+  if(event.target.classList.contains("nav__link")) { // If the target has the class "nav__link"
+    const id = event.target.getAttribute("href"); // We get the href attribute
+    document.querySelector(id).scrollIntoView({behavior:"smooth"}); // And scroll smoothly to that section
+  }
+}); 
+
+// DOM TRAVERSING
+// const h1 = document.querySelector("h1");
+
+// Going downwards: child
+// console.log(h1.querySelectorAll(".highlight"));
+// console.log(h1.children); // gives us the live collection
+// h1.firstElementChild.style.color = "white";
+// h1.lastElementChild.style.color = "black";
+
+// Going upwards: parents
+// console.log(h1.parentNode);
+// console.log(h1.parentElement);
+
+// We can use CSS variables like this
+// h1.closest(".header").style.background = "var(--gradient-secondary)";
+// h1.closest("h1").style.background = "var(--gradient-primary)";
+
+// Going sideways or getting siblings
+// console.log(h1.previousElementSibling);
+// console.log(h1.nextElementSibling);
+
+// The best way to get all the siblings
+// console.log(h1.parentElement.children);
+// [...h1.parentElement.children].forEach(function(el) {
+//   if(el !== h1){
+//     el.style.transform = "scale(0.5)";
+//   }
+// })
+
+
+// BUILDING A TABBED COMPONENT
+const tabs = document.querySelectorAll(".operations__tab");
+const tabsContainer = document.querySelector(".operations__tab-container");
+const tabsContent = document.querySelectorAll(".operations__content");
+// Tabbed component
+tabsContainer.addEventListener("click", function(event){
+  event.preventDefault();
+  // We can use event delegation through "closest" to get which tab was clicke.
+  // Basically finds the closest parent of what was clicked
+  const clicked = event.target.closest(".operations__tab");
+
+  // Guard clause. When there is nothing clicked, we finish the function.
+  // Just in case we click the tab or the container, it wont find the closest operations__tab
+  if (!clicked) return;
+
+  // We first remove the active class from all tabs
+  tabs.forEach(tab => tab.classList.remove("operations__tab--active"));
+    // We also remove the active contents
+  tabsContent.forEach(content => content.classList.remove("operations__content--active"));
+
+  // And add it only for the selected tab
+  clicked.classList.add("operations__tab--active");
+  
+  // Activate content tab
+  document
+    .querySelector(`.operations__content--${clicked.dataset.tab}`)
+    .classList.add("operations__content--active");
+});
+
+// PASSING ARGUMENTS INTO EVENT HANDLERS
+const nav = document.querySelector(".nav");
+const handleHover = function(event) {
+  if(event.target.classList.contains("nav__link")) {
+    const link = event.target;
+    // select all children elements that are in list
+    const siblings = link.closest(".nav").querySelectorAll(".nav__link");
+    const logo = link.closest(".nav").querySelector("img");
+
+    siblings.forEach(elem => {
+      if (elem !== link)
+        elem.style.opacity = this;
+      logo.style.opacity = this;
+    })
+  }
+}
+// Passing an argument into handler
+nav.addEventListener("mouseover", handleHover.bind(0.5));
+nav.addEventListener("mouseout", handleHover.bind(1));
+
+// Sticky navigation
+// Using Intersection Observer, it takes 2 parameters(callback function, options object)
+const header = document.querySelector(".header");
+const navHeight = nav.getBoundingClientRect().height;
+
+
+const stickyNav = function(entries) {
+  const [entry] = entries; // == entries[0]
+  if(!entry.isIntersecting) 
+    nav.classList.add("sticky");
+  else 
+    nav.classList.remove("sticky");
+}
+
+const headerObserver = new IntersectionObserver(stickyNav,
+  {
+    // element that the target is intersecting. When null it is the entire viewport
+    root:null,
+    // percentage of intersection ate which the callback function will be called.
+    // In this case, we want the nav-bar to be sticky as soon as it is no longer visible 
+    threshold: 0,
+    rootMargin : `-${navHeight}px`
+  }); 
+headerObserver.observe(header);
+
