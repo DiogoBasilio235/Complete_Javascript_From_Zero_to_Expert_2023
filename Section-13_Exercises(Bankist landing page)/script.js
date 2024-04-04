@@ -1,5 +1,10 @@
 'use strict';
 
+// Force window to always reload on top
+window.onbeforeunload = function () {
+  window.scrollTo(0,0);
+};
+
 ///////////////////////////////////////
 // Modal window
 
@@ -62,7 +67,7 @@ document.addEventListener('keydown', function (e) {
 // console.log(document.body);
 
 // returns the first matched element
-// const header =  document.querySelector(".header");
+ const header =  document.querySelector(".header");
 
 // returns all .section elements in a Node list
 // const sections = document.querySelectorAll(".section");
@@ -385,9 +390,9 @@ const handleHover = function(event) {
 nav.addEventListener("mouseover", handleHover.bind(0.5));
 nav.addEventListener("mouseout", handleHover.bind(1));
 
-// Sticky navigation
+// STICKY NAVIGATION
 // Using Intersection Observer, it takes 2 parameters(callback function, options object)
-const header = document.querySelector(".header");
+//const header = document.querySelector(".header");
 const navHeight = nav.getBoundingClientRect().height;
 
 
@@ -410,3 +415,242 @@ const headerObserver = new IntersectionObserver(stickyNav,
   }); 
 headerObserver.observe(header);
 
+// REVEAL SECTIONS
+const allSections = document.querySelectorAll('.section'); // We get all classes with section on classname
+
+const revealSection = function(entries, observer) {
+  const [entry] = entries;
+  if(!entry.isIntersecting) return;
+  
+  entry.target.classList.remove("section--hidden");
+  observer.unobserve(entry.target);
+};
+
+// We observe when any of the sections above are crossed over by 15%
+const sectionObserver = new IntersectionObserver(
+  revealSection, {
+  root: null,
+  threshold: 0.15,
+});
+
+// We observe when any of the sections are uncrossed and add class section--hidden
+allSections.forEach(function(section){
+  sectionObserver.observe(section);
+  section.classList.add("section--hidden");
+});
+
+//LAZY LOADING IMAGES
+// select all images that have the property data-src
+const imgTargets = document.querySelectorAll("img[data-src]"); 
+
+
+const loadImg = function(entries, observer){
+  const [entry] = entries; // as we have only 1 thershold, we get it here
+
+  if(!entry.isIntersecting) return; // if it is not intersecting, we return early
+
+  //Replace the src attribute with data-src
+  //entry.target is the element currently being intersected
+  entry.target.src = entry.target.dataset.src;
+
+  // When JS replaces the image on the src attribute, it does it behind the scenes. 
+  // But this replacement when it ends emits a load event and we can listen to
+  entry.target.addEventListener("load", function() {
+    entry.target.classList.remove("lazy-img");
+  });
+
+  // When we are done with our task (loading the images), we can unobserve as we don't need it anymore
+  observer.unobserve(entry.target);
+};
+
+// Create the image observer
+const imgObserver = new IntersectionObserver(loadImg, {
+  root: null,
+  threshold: 0,
+  rootMargin: "+200px"
+});
+
+// attach the observer to each of the imgTargets elements, meaning the images
+imgTargets.forEach(img => imgObserver.observe(img))
+
+
+// SLIDER
+// For now, all slides are on top of each other. Let's first start to make them side by side
+const slides = document.querySelectorAll(".slide");
+
+// We are going to work with percentages on the translateX() which moves them to position 100%.
+// The first slide should be at 0% the second at 100%, the third at 200% and the fouth at 300%.
+// We can calculate the position by multiplying the side index by 100.
+// Kept just as an explanation.
+//slides.forEach((slide, index) => slide.style.transform = `translateX(${100 * index})%`);
+
+// Slider buttons
+const btnLeft = document.querySelector(".slider__btn--left");
+const btnRight = document.querySelector(".slider__btn--right");
+let currentSlide = 0;
+const maxSlide = slides.length; // property to let JS know what is the last slide
+const dotContainer = document.querySelector(".dots"); // Select the dots div
+
+const nextSlide = function(){
+    // If we have arrived to the last slide, we start from the begining
+    if (currentSlide === maxSlide - 1){
+      currentSlide = 0;
+    } else {
+      currentSlide++;
+    }
+    goToSlide(currentSlide);
+    activateDot(currentSlide);
+};
+
+const prevSlide = function(){
+  // If we have arrived to the first slide, we go to the end
+  if (currentSlide === 0){
+    currentSlide = maxSlide - 1;
+  } else {
+    currentSlide--;
+  }
+  goToSlide(currentSlide);
+  activateDot(currentSlide);
+};
+
+// Event handlers
+btnRight.addEventListener("click", nextSlide);
+btnLeft.addEventListener("click", prevSlide);
+
+//On the slider, when right or left keys are pressed, the slide changes as well
+document.addEventListener('keydown', function(event){
+  // 2 ways of doing the exact same thing
+  if(event.key === 'ArrowLeft') prevSlide();
+  event.key === "ArrowRight" && nextSlide()
+});
+
+
+
+const goToSlide = function(slide) {
+  // Lets say that the current slide is 1. As we loop over the slides, the first iteration will be 0.
+  // So, index = 0 minus currentSlide = 1 times 100 is -100.
+  // The next slide will be index = 1 minus currentSlide = 1 times 100 is 0.
+  // This way we can say we are on the second slide and the first slide is out of the picture to the left by 100%.
+  // The active slide is the one we want to be 0%
+  slides.forEach((sld, index) => sld.style.transform = `translateX(
+    ${100 * (index - slide)}%
+    )`)
+}
+
+// On the HTML, we just have an empty div with the class "dots"
+// Inside the dots div we insert the same number of buttons as we have slides.
+const createDots = function(){
+  slides.forEach(function(_, index) {
+    dotContainer.insertAdjacentHTML("beforeend", 
+    `<button class="dots__dot" data-slide="${index}"></button>`
+    );
+
+  })
+}
+
+// We attach an event handler not to every dot but to the common parent. (dotContainer) 
+dotContainer.addEventListener("click", function(event){
+  // If the dotContainer contains any child with the class "dots__dot".
+  if(event.target.classList.contains("dots__dot")) {
+    // we get the clicked dot by the custom data attribute "slide"(data-slide in the html)
+    //const slide = event.target.dataset.slide;
+    // OR using destructuring
+    const {slide} = event.target.dataset;
+    goToSlide(slide);
+    activateDot(slide);
+  }
+});
+
+// To change the css of the active dot
+const activateDot = function (slide){
+  // We first select all the dots and remove the active class from all of them
+  document.querySelectorAll(".dots__dot").forEach(dot => dot.classList.remove("dots__dot--active"));
+  // Then, select the active dot through the class and data-slide attribute and add the active class
+  document.querySelector(`.dots__dot[data-slide="${slide}"]`).classList.add("dots__dot--active");
+};
+
+// Init function
+const init = function(){
+  // When page loads, the current slide must be always 0
+goToSlide(0);
+// When page loads, we create the dots on the slider
+createDots();
+// When the page loads, we activate the dots
+activateDot(0);
+}
+init();
+
+
+// LIFECYCLE DOM EVENTS
+// DOMContentLoaded event is fired as soos as the html is completly downloaded and converted to the DOM tree and we can listen to this event
+// Also, all scripts must be dowloaded and executed before the DOMContentLoaded event can happen. Images are not included.
+// document.addEventListener("DOMContentLoaded", function(event){
+//   console.log("HTML parsed and DOM tree built!", event);
+// });
+
+// Load Event is fired by the window. As soon as not only the HTML is parsed but also all the images 
+// and external resources like CSS files are also loaded.
+// window.addEventListener("load", function(event){
+//   console.log("Page fully loaded", event);
+// });
+
+// This event is created immediately before a user is about to leave or reload a page. 
+// After clicking the close page button on the browser for example, 
+// we can ask users if they are 100% sure they want to leave the page.
+// window.addEventListener("beforeunload", function(event){
+//   // In some browsers to make it work we need to call preventDefault(). Not necessary in chrome
+//   event.preventDefault();
+//   console.log(event);
+//   // In order to display a leaving confirmation, we need to set the return value on the event to an empty string, for historical reasons.
+//   e.returnValue = "";
+// })
+
+// EFFICIENT SCRIPT LOADING: DEFER AND ASYNC
+// We can write the script tag at the head or the body end of the html
+/**
+ * Regular Way
+ <script src="script.js">
+ HEAD - Parse the html
+      - Pause the parse of html
+      - Fetch script and execute
+      - Finishing parsing HTML
+      - DOMContentLoaded event fired 
+  Not ideal because the browser is not doing anything while expecting for the script to be loaded.
+  Script will be executed before the DOM is ready. Also not a good idea.
+ 
+ BODY END - Parse the html
+          - Fetch script and execute
+          - DOMContentLoaded event fired 
+  Better but still not perfect.
+  Use if you need to support older browsers
+ 
+
+
+ * Async Way
+ <script async src="script.js">
+ HEAD - Parse the html
+      - Fetch script
+      - Pause the parse of html
+      - Execute script
+      - Finishing parsing HTML
+      - DOMContentLoaded event fired 
+  The script is loaded at the same time as the HTML is parsed.
+  DOMContentLoaded DOES NOT WAIT for an async script
+
+ BODY END - Makes no sense or difference. It always happens after parsing the HTML
+
+
+ * Defer Way -- BEST SOLUTION OVERALL
+ <script defer src="script.js">
+ HEAD - Parse the html
+      - Fetch script
+      - Execute script
+      - DOMContentLoaded event fired 
+  The execution of the script is deferred until the end of the HTML parsing.
+  The HTML parsing is never interrupted.
+  Forces the DOMContentLoaded event to be fired after the whole script has been downloaded and executed.
+  Scripts are executed in order they are written.
+ 
+ BODY END - Makes no sense or difference. It always happens after parsing the HTML
+
+ */
