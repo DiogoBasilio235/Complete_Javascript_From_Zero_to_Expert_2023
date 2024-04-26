@@ -182,3 +182,377 @@ bmw.accelerate();
 
 
 // ES6 CLASSES
+
+// Class expression 
+//const PersonCl = class {}
+
+// Class declaration
+// class PersonCl {
+//   // We pass the arguments we want the class to have
+//   constructor(fullName, birthYear) {
+//     this.fullName = fullName;
+//     this.birthYear = birthYear;
+//   }
+//   // For the methods, we can write them after the constructor.
+//   // These methods will be on the prototype of the object and NOT on the object themselves.
+//   calcAge() {
+//     console.log(2024 - this.birthYear);
+//   }
+
+//   get age(){
+//     return 2024 - this.birthYear;
+//   }
+//   set fullName(name){
+//     // The convention _fullName is used because the constructor and the setter are in conflict when we create a new person, because the property already exists.
+//     // We then use the "get fullName" to give this property value, instead of just keeping it in the _fullName
+//     if(name.includes(" "))this._fullName = name;
+//     else alert(`${name} is not a full name`);
+//   }
+
+//   get fullName() {
+//     return this._fullName;
+//   }
+
+//   // Static method. All the others are Instance methods
+//   static hey() {
+//     console.log(`Hey there 👍`);
+//   }
+// }
+
+//const jessica = new PersonCl("Jessica Davies", 1996);
+// console.log(jessica);
+// jessica.calcAge(); //28
+// console.log(jessica.__proto__ === PersonCl.prototype); // true
+
+// We can also add manually a method to the prototype of PersonCl, as we have done before.
+// PersonCl.prototype.greet = function() {
+//   console.log(`Hey ${this.firstName}`);
+// }
+// jessica.greet();
+
+// SOME THINGS TO KEEP IN MIND
+// 1. Classes are NOT hoisted. 
+//    We can use functions before they are declared, the same doesn't happen with classes.
+//
+// 2. Classes are also first-class citizens.
+//    Meaning we can pass them into functions and also return them from functions,
+//
+// 3. The body of a class is always executed in strict mode
+//    Meaning it will change the behavior and enforce stricter rules and throw more errors in certain situations.
+//    When in strict mode, JavaScript will perform additional checks and restrictions to help you write cleaner and more reliable code.
+
+
+// SETTERS && GETTERS
+// const account = {
+//   owner: "jonas",
+//   movements: [200, 530, 120, 300],
+
+//   // To create a getter inside an object, we just need to prepend "get" on the function:
+//   get latest(){
+//     return this.movements.slice(-1).pop();
+//   },
+//   // We can do the same for the setter. Any setter needs to have one parameter.
+//   set latest(movement) {
+//     this.movements.push(movement);
+//   }
+// };
+
+// We call it as if it was a property of the object. No need for the parenthesis.
+// This is useful when we need to read something as a property but we need a small calculation first.
+// console.log(account.latest); // 300
+
+// // To use the setter
+// account.latest = 50;
+// console.log(account.latest); // 50
+
+
+// STATIC METHODS
+// To add a static method we just need to add:
+// Person.hey = function(){
+//   console.log(`Hey there 👍`);
+// }
+// But this is not inherited by all Person Objects. It is not on the prototype of Person
+// Static methods are NOT available on the instances
+// Person.hey(); 
+// //jonas.hey(); // ERROR
+// PersonCl.hey();
+// //jessica.hey(); // ERROR
+
+
+// OBJECT.CREATE
+// On our PersonProto, this is the only method we want to be inherited by all instances of PersonProto
+// const PersonProto = {
+//   calcAge() {
+//     console.log(2024 - this.birthYear);
+//   },
+//   init(firstName, birthYear){
+//     this.firstName = firstName;
+//     this.birthYear = birthYear;
+//   }
+// };
+
+// const steven = Object.create(PersonProto);
+// steven.name = "Steven";
+// steven.birthYear = 1988;
+// steven.calcAge();
+
+// const sarah = Object.create(PersonProto);
+// sarah.init("Sarah", 1979);
+// sarah.calcAge(); 
+
+///////////////////////////////////////
+// Coding Challenge #2
+
+/* 
+1. Re-create challenge 1, but this time using an ES6 class;
+2. Add a getter called 'speedUS' which returns the current speed in mi/h (divide by 1.6);
+3. Add a setter called 'speedUS' which sets the current speed in mi/h (but converts it to km/h before storing the value, by multiplying the input by 1.6);
+4. Create a new car and experiment with the accelerate and brake methods, and with the getter and setter.
+
+DATA CAR 1: 'Ford' going at 120 km/h
+
+GOOD LUCK 😀
+
+
+// My solution
+class CarCl {
+
+  constructor(make, speed) {
+    this.make = make;
+    this.speed = speed;
+  }
+
+  get speedUS(){
+    return this.speed / 1.6;
+  }
+
+  set speedUS(speedInKmH){
+    this.speed = speedInKmH * 1.6;
+  }
+
+  accelarate = function(){
+    this.speed += 10;
+    console.log(`${this.make} is going at ${this.speed} km/h`);
+  }
+
+  brake = function(){
+    this.speed -= 5;
+    console.log(`${this.make} is going at ${this.speed} km/h`);
+  }
+}
+const ford = new CarCl("Ford", 120);
+console.log(ford);
+console.log(ford.speedUS);
+ford.accelarate();
+console.log(ford.speedUS);
+ford.brake();
+console.log(ford.speedUS);
+
+/////////////////////////////////////////////////////
+// Teachers Solution
+
+class CarClt {
+
+  constructor(make, speed) {
+    this.make = make;
+    this.speed = speed;
+  }
+  accelarate(){
+    this.speed += 10;
+    console.log(`${this.make} is going at ${this.speed} km/h`);
+  }
+
+  brake(){
+    this.speed -= 5;
+    console.log(`${this.make} is going at ${this.speed} km/h`);
+  }
+  
+  get speedUS(){
+    return this.speed / 1.6;
+  }
+
+  set speedUS(speed){
+    this.speed = speed * 1.6;
+  }
+}
+const fordT = new CarClt("Ford", 120);
+console.log(fordT.speedUS);
+*/
+
+// INHERITANCE BETWEEN CLASSES
+
+// For this lecture we will use the Person object as a reference.
+// Right now we have created a Student which only differs from the Person object in the "course" property.
+// Duplicate code is never a good idea.
+// const Student = function(firstName, birthYear, course){
+//   this.firstName = firstName;
+//   this.birthYear = birthYear;
+//   this.course = course;
+// }
+
+// This way we avoid duplicate code and in the case of the Person object changes in the future,
+// the changes can be reflected also in the Student object.
+// Using the call function with the "this" keyword, we are saying to JS that the "this" in the Person object,
+// will be the same "this" in the Student object. 
+// const Student = function(firstName, birthYear, course){
+//   Person.call(this, firstName, birthYear);
+//   this.course = course;
+// }
+
+
+// Linking here the objects allows the Student object to have access to all the methods of the Person object through the Prototype Chain as we have discussed before.
+// From this moment onwards, Student inherits from the Person.prototype.
+// We need to set this Object.create before inserting any more methods on the Student prototype.
+// Student.prototype = Object.create(Person.prototype);
+
+
+// Student.prototype.introduce = function (){
+//   console.log(`My name is ${this.firstName} and I study ${this.course}`);
+// }
+
+// const mike = new Student("Mike", 2000, "Computer Science"); 
+// mike.introduce()
+// mike.calcAge();
+
+///////////////////////////////////////
+// Coding Challenge #3
+
+/* 
+1. Use a constructor function to implement an Electric Car (called EV) as a CHILD "class" of Car. Besides a make and current speed, the EV also has the current battery charge in % ('charge' property);
+2. Implement a 'chargeBattery' method which takes an argument 'chargeTo' and sets the battery charge to 'chargeTo';
+3. Implement an 'accelerate' method that will increase the car's speed by 20, and decrease the charge by 1%. Then log a message like this: 'Tesla going at 140 km/h, with a charge of 22%';
+4. Create an electric car object and experiment with calling 'accelerate', 'brake' and 'chargeBattery' (charge to 90%). Notice what happens when you 'accelerate'! HINT: Review the definiton of polymorphism 😉
+
+DATA CAR 1: 'Tesla' going at 120 km/h, with a charge of 23%
+
+GOOD LUCK 😀
+
+// My solution
+const Car = function (make, speed) {
+  this.make = make;
+  this.speed = speed;
+};
+
+Car.prototype.accelerate = function () {
+  this.speed += 10;
+  console.log(`${this.make} is going at ${this.speed} km/h`);
+};
+  
+Car.prototype.brake = function () {
+  this.speed -= 5;
+  console.log(`${this.make} is going at ${this.speed} km/h`);
+};
+  
+const EV = function(make, speed, charge){
+  Car.call(this, make, speed);
+  this.charge = charge;
+}
+
+// Link the prototypes
+EV.prototype = Object.create(Car.prototype);
+
+EV.prototype.chargeBattery = function(chargeTo) {
+  this.charge = chargeTo;
+}
+
+EV.prototype.accelerate = function(){
+  this.speed += 20;
+  this.charge -= 1
+  console.log(`${this.make} going at ${this.speed}km/h with a charge of ${this.charge}%`);
+}
+
+
+const tesla = new EV("Tesla", 120, 23);
+console.log(tesla);
+tesla.chargeBattery(26);
+console.log(`Current battery level: ${tesla.charge} %`);
+
+tesla.accelerate();
+tesla.brake();
+
+// Teachers solution
+
+const EV = function(make, speed, charge){
+  Car.call(this, make, speed);
+  this.charge = charge;
+}
+
+// Link the prototypes
+EV.prototype = Object.create(Car.prototype);
+
+EV.prototype.chargeBattery = function(chargeTo) {
+  this.charge = chargeTo;
+}
+
+EV.prototype.accelerate = function(){
+  this.speed += 20;
+  this.charge -= 1
+  console.log(`${this.make} going at ${this.speed}km/h with a charge of ${this.charge}%`);
+}
+
+const tesla = new EV("Tesla", 120, 23);
+tesla.chargeBattery(90);
+console.log(tesla);
+tesla.brake();
+tesla.accelerate();
+*/
+
+
+// INHERITANCE BETWEEN CLASSES
+// Using the PersonCl example 
+class PersonCl {
+  constructor(fullName, birthYear) {
+    this.fullName = fullName;
+    this.birthYear = birthYear;
+  }
+
+  calcAge() {
+    console.log(2024 - this.birthYear);
+  }
+  
+  greet() {
+    console.log(`Hey ${this.fullName}`);
+  }
+
+  get age(){
+    return 2024 - this.birthYear;
+  }
+
+  set fullName(name){
+    if(name.includes(" "))this._fullName = name;
+    else alert(`${name} is not a full name`);
+  }
+  
+  get fullName() {
+    return this._fullName;
+  }
+
+  static hey() {
+    console.log(`Hey there 👍`);
+  }
+}
+
+// With classes, we just need the extends keyword to inherit all methods from PersonCl.
+class StudentCl extends PersonCl{
+  constructor(fullName, birthYear, course){
+    // super() is the constructor function of the parent class, but here happens automatically.
+    // Always needs to happen first. The super() is responsible of creating the "this" keyword in the StudentCl class
+    super(fullName, birthYear);
+    this.course = course;
+  }
+
+  introduce() {
+    console.log(`My name is ${this.fullName} and I study ${this.course}`);
+  }
+
+  calcAge(){
+    console.log(`I'm ${2024 - this.birthYear} years old but as a student I feel more like ${2024 - this.birthYear + 10}`);
+  }
+}
+
+const martha = new StudentCl("Martha Jones", 2001, "Data Science");
+martha.introduce();
+martha.calcAge();
+
+
+// INHERITANCE BETWEEN CLASSES WITH OBJECT.CREATE
