@@ -500,59 +500,356 @@ tesla.accelerate();
 
 // INHERITANCE BETWEEN CLASSES
 // Using the PersonCl example 
-class PersonCl {
-  constructor(fullName, birthYear) {
-    this.fullName = fullName;
-    this.birthYear = birthYear;
-  }
+// class PersonCl {
+//   constructor(fullName, birthYear) {
+//     this.fullName = fullName;
+//     this.birthYear = birthYear;
+//   }
 
-  calcAge() {
-    console.log(2024 - this.birthYear);
-  }
+//   calcAge() {
+//     console.log(2024 - this.birthYear);
+//   }
   
-  greet() {
-    console.log(`Hey ${this.fullName}`);
-  }
+//   greet() {
+//     console.log(`Hey ${this.fullName}`);
+//   }
 
-  get age(){
-    return 2024 - this.birthYear;
-  }
+//   get age(){
+//     return 2024 - this.birthYear;
+//   }
 
-  set fullName(name){
-    if(name.includes(" "))this._fullName = name;
-    else alert(`${name} is not a full name`);
-  }
+//   set fullName(name){
+//     if(name.includes(" "))this._fullName = name;
+//     else alert(`${name} is not a full name`);
+//   }
   
-  get fullName() {
-    return this._fullName;
-  }
+//   get fullName() {
+//     return this._fullName;
+//   }
 
-  static hey() {
-    console.log(`Hey there 👍`);
-  }
-}
+//   static hey() {
+//     console.log(`Hey there 👍`);
+//   }
+// }
 
-// With classes, we just need the extends keyword to inherit all methods from PersonCl.
-class StudentCl extends PersonCl{
-  constructor(fullName, birthYear, course){
-    // super() is the constructor function of the parent class, but here happens automatically.
-    // Always needs to happen first. The super() is responsible of creating the "this" keyword in the StudentCl class
-    super(fullName, birthYear);
-    this.course = course;
-  }
+// // With classes, we just need the extends keyword to inherit all methods from PersonCl.
+// class StudentCl extends PersonCl{
+//   constructor(fullName, birthYear, course){
+//     // super() is the constructor function of the parent class, but here happens automatically.
+//     // Always needs to happen first. The super() is responsible of creating the "this" keyword in the StudentCl class
+//     super(fullName, birthYear);
+//     this.course = course;
+//   }
 
-  introduce() {
-    console.log(`My name is ${this.fullName} and I study ${this.course}`);
-  }
+//   introduce() {
+//     console.log(`My name is ${this.fullName} and I study ${this.course}`);
+//   }
 
-  calcAge(){
-    console.log(`I'm ${2024 - this.birthYear} years old but as a student I feel more like ${2024 - this.birthYear + 10}`);
-  }
-}
+//   calcAge(){
+//     console.log(`I'm ${2024 - this.birthYear} years old but as a student I feel more like ${2024 - this.birthYear + 10}`);
+//   }
+// }
 
-const martha = new StudentCl("Martha Jones", 2001, "Data Science");
-martha.introduce();
-martha.calcAge();
+// const martha = new StudentCl("Martha Jones", 2001, "Data Science");
+// martha.introduce();
+// martha.calcAge();
 
 
 // INHERITANCE BETWEEN CLASSES WITH OBJECT.CREATE
+
+// const PersonProto = {
+//   calcAge() {
+//     console.log(2024 - this.birthYear);
+//   },
+//   init(firstName, birthYear){
+//     this.firstName = firstName;
+//     this.birthYear = birthYear;
+//   }
+// };
+
+// // By using the Object.Create to create a StudentProto with the same properties as PersonProto
+// // we are giving instructions to StudentProto directly inherit from PersonProto
+// const StudentProto = Object.create(PersonProto);
+
+// // Lets just give some properties to the StudentProto
+// StudentProto.init = function(firstName, birthYear, course){
+//   // Lets take advantage of the init function of PersonProto.
+//   // We use the call() to set the "this" keyword to ths StudentProto Object
+//   PersonProto.init.call(this, firstName, birthYear);
+//   this.course = course;
+// }
+
+// StudentProto.introduce = function () {
+//     console.log(`My name is ${this.firstName} and I study ${this.course}`);
+//   }
+
+// // This way "jay" inherits directly from from 
+// const jay = Object.create(StudentProto);
+
+// jay.init("Jay", 1993, "Architecture");
+// jay.introduce();
+// jay.calcAge();
+
+
+// ENCAPSULATION: PROTECTED PROPERTIES AND METHODS
+// As the class approach is the most used on the real world, we will use this approach for the duration of the course
+// Trully encapsulation in JS still doesn't exist. 
+// We will use "fake" encapsulation for the "movements" array as it is a critical part of the code
+// class Account {
+//   constructor(owner, currency, pin){
+//     this.owner = owner;
+//     this.currency = currency;
+//     this._pin = pin;
+//     // We just add a "_" to movements to fake encapsulation, making it a protected property.
+//     this._movements = [];
+//     this.locale = navigator.language;
+
+//     console.log(`Thank you for opening an account, ${owner}.`);
+//   }
+
+//   // Public interface (API)
+//   deposit(val) {
+//     this._movements.push(val);
+//   }
+
+//   // We have abstracted the negative movement from the user.
+//   withdraw(val){
+//     this.deposit(-val);
+//   }
+
+//   // Let's protect this method as well. It should not be part of the public API
+//   _approveLoan(val){
+//     return true;
+//   }
+
+//   requestLoan(val){
+//     if (this._approveLoan(val)){
+//       this.deposit(val);
+//       console.log(`Loan approved`);
+//     }
+//   }
+
+//   // This is the correct way to have access to the _movements array
+//   getMovements() {
+//     return this._movements;
+//   }
+// }
+
+// const acc1 = new Account("Jonas", "EUR", 1111);
+// acc1.deposit(250);
+// acc1.withdraw(140);
+// acc1.requestLoan(1000);
+
+// We sholdn't be able to access to this property. Using the "_" we can still have access to it,
+// but through convention we now know that it is wrong to do so.
+// acc1._movements.push(100);
+// console.log(acc1.getMovements());
+
+
+// ENCAPSULATION: PRIVATE CLASS FIELDS AND METHODS
+// This is part of a bigger proposal to change JS which is simply called Class Fields.
+// In this proposal, we will focus in 4 out of 8 kinds of fields and methods
+// 1) Public fields
+// 2) Private fields
+// 3) Public methods 
+// 4) Private methods
+// Extra: (the static version)
+
+// class Account {
+
+//   // 1) Public fields.
+//   // All of these fields will be present on all the instances we are creating through the class. 
+//   // Meaning THEY ARE NOT IN THE PROTOTYPE!!  But the methods will always be added to the prototype.
+//   locale = navigator.language;
+ 
+
+//   // 2) Private fields
+//   // The "#" symbol is what makes a field private
+//   #movements= [];
+//   // We create the "pin" and an empty variable and only give value to it during the creation of the object,
+//   // as it was done before
+//   #pin;
+
+//   constructor(owner, currency, pin){
+//     this.owner = owner;
+//     this.currency = currency;
+//     this.#pin = pin;
+
+//     console.log(`Thank you for opening an account, ${owner}.`);
+//   }
+
+//   // 3) Public methods
+//   deposit(val) {
+//     this.#movements.push(val);
+//     return this; // Added this line to be able to chain methods.
+//   }
+
+//   withdraw(val){
+//     this.deposit(-val);
+//     return this;
+//   }
+
+//   requestLoan(val){
+//     if (this.#approveLoan(val)){
+//       this.deposit(val);
+//       console.log(`Loan approved`);
+//     }
+//     return this;
+//   }
+
+//   getMovements() {
+//     return this.#movements;
+//   }
+
+//   // 4) Private methods
+//   // Just like a private method, we use the "#" syntax
+//   #approveLoan(val){
+//     return true;
+//   }
+
+//   // Static version
+//   static helper(){
+//     console.log("Helper");
+//   }
+
+// }
+// const acc1 = new Account("Jonas", "EUR", 1111);
+// acc1.deposit(250);
+// acc1.withdraw(140);
+// acc1.requestLoan(1000);
+
+// To call the static version
+// Account.helper();
+
+
+// CHAINING METHODS
+// This won't work. The first deposit will work but as it returns "undefined", the second deposit won't work.
+//acc1.deposit(300).deposit(500).withdraw(35).requestLoan(25000).withdraw(4000);
+
+// A simple way to change this behavior is to add the line "return this" to the end of the method.
+// acc1.deposit(300).deposit(500).withdraw(35).requestLoan(25000).withdraw(4000);
+// console.log(acc1.getMovements());
+
+
+///////////////////////////////////////
+// Coding Challenge #4
+
+/* 
+1. Re-create challenge #3, but this time using ES6 classes: create an 'EVCl' child class of the 'CarCl' class
+2. Make the 'charge' property private;
+3. Implement the ability to chain the 'accelerate' and 'chargeBattery' methods of this class, and also update the 'brake' method in the 'CarCl' class. They experiment with chining!
+
+DATA CAR 1: 'Rivian' going at 120 km/h, with a charge of 23%
+
+GOOD LUCK 😀
+
+
+// My Solution
+class Car {
+  constructor (make, speed){
+    this.make = make;
+    this.speed = speed;
+  }
+  accelerate = function () {
+    this.speed += 10;
+    console.log(`${this.make} is going at ${this.speed} km/h`);
+  }
+  brake = function () {
+    this.speed -= 5;
+    console.log(`${this.make} is going at ${this.speed} km/h`);
+    return this;
+  }
+}
+
+
+class EV extends Car {
+  #charge;
+  constructor(make, speed, charge){
+    super(make, speed);
+    this.#charge = charge;
+  }
+
+  chargeBattery = function(chargeTo) {
+    this.#charge = chargeTo;
+    return this;
+  }
+
+  accelerate = function(){
+    this.speed += 20;
+    this.#charge -= 1
+    console.log(`${this.make} going at ${this.speed}km/h with a charge of ${this.#charge}%`);
+    return this;
+  }
+}
+
+const rivian = new EV("Rivian", 120, 23);
+rivian.chargeBattery(50).accelerate().brake();
+
+
+
+///////////////////////////////////////
+// Teachers solution
+class CarCl {
+  constructor(make, speed) {
+    this.make = make;
+    this.speed = speed;
+  }
+
+  accelerate() {
+    this.speed += 10;
+    console.log(`${this.make} is going at ${this.speed} km/h`);
+  }
+
+  brake() {
+    this.speed -= 5;
+    console.log(`${this.make} is going at ${this.speed} km/h`);
+    return this;
+  }
+
+  get speedUS() {
+    return this.speed / 1.6;
+  }
+
+  set speedUS(speed) {
+    this.speed = speed * 1.6;
+  }
+}
+
+class EVCl extends CarCl {
+  #charge;
+
+  constructor(make, speed, charge) {
+    super(make, speed);
+    this.#charge = charge;
+  }
+
+  chargeBattery(chargeTo) {
+    this.#charge = chargeTo;
+    return this;
+  }
+
+  accelerate() {
+    this.speed += 20;
+    this.#charge--;
+    console.log(
+      `${this.make} is going at ${this.speed} km/h, with a charge of ${
+        this.#charge
+      }`
+    );
+    return this;
+  }
+}
+
+const rivian = new EVCl('Rivian', 120, 23);
+console.log(rivian);
+// console.log(rivian.#charge);
+rivian
+  .accelerate()
+  .accelerate()
+  .accelerate()
+  .brake()
+  .chargeBattery(50)
+  .accelerate();
+
+console.log(rivian.speedUS);
+*/
