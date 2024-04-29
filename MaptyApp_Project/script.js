@@ -41,48 +41,18 @@ if(navigator.geolocation){
         // Success callback
         function(position){
             // Destructuring to create a variable latitude out of the latitude property of "coords" object
-           const {latitude} = position.coords;
-           const {longitude} = position.coords;
-           const coords = [latitude, longitude ]
-
-           // DISPLAYING A MAP USING LEAFLET LIBRARY
-           // We always need to pass an id of a div. In this case "map".
-           // "L" is the namespace of Leaflet. It takes the coords and the zoom of the map (13)
-           const map = L.map('map').setView(coords, 13);
-
-           // Here it shows the appearance of the map. We can change around and try different layouts
-           L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-           }).addTo(map);
-
-
-           // DISPLAYING A MAP MARKER
-           // mapEvent is a special event triggered by Leaflet
-           map.on("click", function(mapEvent) {
-            const {lat, lng} = mapEvent.latlng;
-
-            L.marker([lat, lng])
-            .addTo(map)
-            .bindPopup(L.popup({
-               maxWidth: 250,
-               minWidth: 100,
-               autoClose: false,
-               closeOnClick: false,
-               className: "running-popup",
-               
-            }))
-            .setPopupContent("Workout")
-            .openPopup();
-
-           });
-         },
+            const {latitude} = position.coords;
+            const {longitude} = position.coords;
+           
+            console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
+        },
         // Error calback 
         function() {
         alert("Could not get your position.")
     });
 }
 
-// DISPLAYING A MAP MARKER
+// DISPLAYING A MAP USING LEAFLET LIBRARY
 
 
 
