@@ -30,7 +30,6 @@ class Workout {
    // The ID will be a Date timestamp turned into a string and then we take the last 10 digits.
    // Generally a bad idea on the real world
    id = (Date.now() + "").slice(-10);
-   clicks = 0;
 
    constructor(coords, distance, duration){
       this.coords = coords; // [lat, lng]
@@ -44,10 +43,6 @@ class Workout {
 
       this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on 
       ${months[this.date.getMonth()]} ${this.date.getDate()}`
-   }
-
-   click(){
-      this.clicks++;
    }
 }
 
@@ -106,11 +101,15 @@ class App{
       //a really suitable place to initiate all the methods needed for the app to work.
       this._getPosition();
       
-     // Using again the bind(this) so it doesn't point to the form but to the object itself.
+      // Get data from local storage
+      this._getLocalStorage();
+
+      // Using again the bind(this) so it doesn't point to the form but to the object itself.
       form.addEventListener("submit", this._newWorkout.bind(this));
 
       inputType.addEventListener("change", this._toggleElevationField);
       containerWorkouts.addEventListener("click", this._moveToPopup.bind(this));
+   
    }
 
    _getPosition(){
@@ -143,6 +142,11 @@ class App{
       }).addTo(this.#map);
 
       this.#map.on("click", this._showForm.bind(this));
+
+      // Render the markers of the workouts on local storage AFTER the map is loaded!! 
+      this.#workouts.forEach(work => {
+         this._renderWorkoutMarker(work);
+      });
    }
 
    _showForm(mapE){
@@ -225,6 +229,8 @@ class App{
       // Hide form + clear input fields
       this._hideForm();
 
+      // Set local storage to all workouts
+      this._setLocalStorage();
    }
 
    _renderWorkoutMarker(workout){
@@ -311,18 +317,34 @@ class App{
             duration: 1
          },
       });
+   }
 
-      // Using the public interface
-      workout.click();
+   _setLocalStorage(){
+      // This method will get all the workouts from the "#workouts" property.
+      // Next we can find how to use the localStorage API, provided by the browser.
+      // We need a key for what we will save and a string with the object we want to save, 
+      // thus the stringify method being used. localStorage is advised to use only for small amounts of data
+      localStorage.setItem("workouts", JSON.stringify(this.#workouts));
+   }
+
+   _getLocalStorage(){
+      // Use JSON.parse to bring it back from a string
+      const data = JSON.parse(localStorage.getItem("workouts"));
+      
+      if (!data) return;
+
+      this.#workouts = data;
+
+      this.#workouts.forEach(work => {
+         this._renderWorkout(work);
+      });  
+   }
+
+   // Remove all items from local storage.
+   reset() {
+      localStorage.removeItem("workouts");
+      location.reload();
    }
 }
 
 const app = new App();
-
-
-
-
-
-
-
-
