@@ -22,14 +22,14 @@ console.log("Importing module.")
 
 // With default import, we can give the name we want to the code that was imported because the default will always be the same.
 // We can use a combination of normal and default imports, although it is not advisible.
-// import add, {cart} from "./shoppingCart.js";
-// add("pizzas", 2);
-// add("bread", 5);
-// add("apples", 4);
+import add, {cart} from "./shoppingCart.js";
+add("pizzas", 2);
+add("bread", 5);
+add("apples", 4);
 
 // By the time we exported the cart array it was empty, but the import is a live connection, not simply a copy.
 // They are the same and are pointing to the same place in momory
-// console.log(cart);
+console.log(cart);
 
 
 // TOP LEVEL AWAIT
@@ -101,6 +101,7 @@ console.log("Importing module.")
 // We will use the cloneDeep function because of the inherent difficulty of creating a nested object
 import cloneDeep from "./node_modules/lodash-es/cloneDeep.js";
 
+
 const state = {
     cart: [
         {product: "bread", quantity: 5},
@@ -126,3 +127,37 @@ console.log(stateDeepClone);
 
 
 // BUNDLING WITH PARCEL AND NPM SCRIPTS
+// Parcel is just like Webpack used on React but for this course is way too complex to use. We should use it in our command line
+// Let's install it with "npm install parcel --save-dev" on the folder "Section-17_Exercises", as we have done so far.
+// To use Parcel in this project we have 2 options:
+// 1: Writtig "npx parcel index.html". The index.html is the entry point because it is where we include our script.js. 
+// The objective is to bundle everything together. Parcel has started a new development server on an url specified on our command line.
+// The "dist" folder will be the folder to be sent to production. It is the code in that folder that will be sent to our final users.
+
+// 2: NPM Scripts
+// NPM scripts are another way of running locally installed packages in the command line. 
+// Useful also to automate repetitive tasks. We have modified the property "scripts" on our package.json file
+// and now we just need to write "npm run start" on our command line, being "start" the name of the npm script that we have defined on package.json
+
+// To build the final bundle there is another command that we need to run: "npm run build".
+// If we go to the npm scripts, you will see a new added script by us called "build" that will build the application.
+
+
+// CONFIGURING BABEL AND POLYFILLING
+// Babel is useful when we need to transpile our code back to ES5 if we want our applications to work in older computers or browsers.
+// Parcel automatically uses Babel. And we can configure Babel to the point of which browsers should be supported.
+// Instead of choosing what kind of elements you want transpiled to ES5, Babel has some presets to be used.
+
+// Polifilling
+// In JavaScript, a polyfill is a piece of code (usually a function or a script) that provides functionality that is not natively supported 
+// by a browser or runtime environment. Polyfills are used to implement features that are defined in modern JavaScript standards but 
+// are not yet available in older browsers or environments.
+// Things might be different sometime in the future.
+
+// Library for polifilling find() methods and Promises
+// npm install core-js
+import 'core-js/stable';
+
+// Library for polifilling async functions
+// npm install regenerator-runtime
+import 'regenerator-runtime/runtime' 

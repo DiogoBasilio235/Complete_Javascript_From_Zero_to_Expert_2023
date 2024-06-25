@@ -407,3 +407,7 @@ ASALocalRun/
 
 # Prettier file
 .prettierrc
+
+# Parcel files
+Section-17_Exercises/.parcel-cache
+Section-17_Exercises/dist
