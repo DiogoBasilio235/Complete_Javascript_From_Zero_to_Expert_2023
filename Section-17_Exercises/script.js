@@ -14,22 +14,22 @@
 //  console.log(tq);
 
 
-// Another way of importing and using he elements from other class.
-console.log("Importing module.")
-//  import * as ShoppingCart from "./shoppingCart.js";
-// ShoppingCart.addToCart("bread", 5);
-// console.log(ShoppingCart.totalPrice);
+// // Another way of importing and using he elements from other class.
+// console.log("Importing module.")
+// //  import * as ShoppingCart from "./shoppingCart.js";
+// // ShoppingCart.addToCart("bread", 5);
+// // console.log(ShoppingCart.totalPrice);
 
-// With default import, we can give the name we want to the code that was imported because the default will always be the same.
-// We can use a combination of normal and default imports, although it is not advisible.
-import add, {cart} from "./shoppingCart.js";
-add("pizzas", 2);
-add("bread", 5);
-add("apples", 4);
+// // With default import, we can give the name we want to the code that was imported because the default will always be the same.
+// // We can use a combination of normal and default imports, although it is not advisible.
+// import add, {cart} from "./shoppingCart.js";
+// add("pizzas", 2);
+// add("bread", 5);
+// add("apples", 4);
 
-// By the time we exported the cart array it was empty, but the import is a live connection, not simply a copy.
-// They are the same and are pointing to the same place in momory
-console.log(cart);
+// // By the time we exported the cart array it was empty, but the import is a live connection, not simply a copy.
+// // They are the same and are pointing to the same place in momory
+// console.log(cart);
 
 
 // TOP LEVEL AWAIT
@@ -99,27 +99,27 @@ console.log(cart);
 // Let's now install Lodash. Lodash is a library of funcions that should be coming with JS by default but aren't.
 // We need to install the lodash-es version.
 // We will use the cloneDeep function because of the inherent difficulty of creating a nested object
-import cloneDeep from "./node_modules/lodash-es/cloneDeep.js";
+// import cloneDeep from "./node_modules/lodash-es/cloneDeep.js";
 
 
-const state = {
-    cart: [
-        {product: "bread", quantity: 5},
-        {product: "pizza", quantity: 5},
-    ],
-    user: { loggedIn: true }
-}
+// const state = {
+//     cart: [
+//         {product: "bread", quantity: 5},
+//         {product: "pizza", quantity: 5},
+//     ],
+//     user: { loggedIn: true }
+// }
 
-const stateClone = Object.assign({}, state);
-const stateDeepClone = cloneDeep(state);
+// const stateClone = Object.assign({}, state);
+// const stateDeepClone = cloneDeep(state);
 
-// But what happens if we change one of the nested object? 
-//Although we changed the state.user.loggedIn to false, this change was also done to the stateClone object.
-state.user.loggedIn = false;
-console.log(stateClone);
+// // But what happens if we change one of the nested object? 
+// //Although we changed the state.user.loggedIn to false, this change was also done to the stateClone object.
+// state.user.loggedIn = false;
+// console.log(stateClone);
 
-// Using the cloneDeep function, the original properties of the state object are maintained. The loggedIn property is still true
-console.log(stateDeepClone);
+// // Using the cloneDeep function, the original properties of the state object are maintained. The loggedIn property is still true
+// console.log(stateDeepClone);
 
 // When sharing the project with another developer or sending it to git, YOU SHOULD NEVER INCLUDE THE node-modules FOLDER!!!
 // The node-modules folder will be huge in a real project. So, even if you delete the folder, using "npm install", you can get back
@@ -156,8 +156,93 @@ console.log(stateDeepClone);
 
 // Library for polifilling find() methods and Promises
 // npm install core-js
-import 'core-js/stable';
+// import 'core-js/stable';
 
 // Library for polifilling async functions
 // npm install regenerator-runtime
-import 'regenerator-runtime/runtime' 
+// import 'regenerator-runtime/runtime' 
+
+
+// WRITING CLEAN AND MODERN JAVASCRIPT
+/*
+READABLE CODE
+- Write code so that others can understand.
+- Write code so that you can understand it in 1 year.
+- Avoid "too" clever and overcomplicated solutions.
+- Use descriptive variable names: what they contain.
+- Use descriptive function names: what they do.
+
+GENERAL
+- Use DRY principal. (Don't Repeat Yourself) Refactor your code if needed.
+- Don't pollute global namespace, encapsulate instead.
+- Don't use "var" to declare variables. Use "const" or "let"
+- Use strong type checks (=== and !==)
+
+FUNCTIONS
+- Generally, functions should do only ONE thing.
+- Don't use more than 3 function parameters.
+- Use default parameters whenever possible.
+- Generally return same data type as received.
+- Use arrow functions when they make code more readable.
+
+OOP
+- Use ES6 classes.
+- Encapsulate data and don't mutate it from outside the class.
+- Implement method chaining.
+- Do NOT use arrow functions as methods (in regular objects).
+
+AVOID NESTED CODE
+- Use early return (guard clauses).
+- Use ternary (conditional) or logical operators instead of "if".
+- Use multiple "if" instead of "if/else-if"
+- Avoid "for" loops, use array methods instead.
+- Avoid callback-base asynchronous APIs
+
+ASYNCHRONOUS CODE
+- Consume Promisses with "async/await" for best readibility.
+- Wheneve possible, run Promises in parallel (Promises.all)
+- Handle errros and Promise rejections.
+ */
+
+// IMPERATIVE VS DECLARATIVE CODE
+/*
+ * Imperative
+- Developer explains "how to do things"
+- We explain the computer every single step it has to follow to achieve a result
+- Example: Follow a step-by-step recipe of a cake.
+
+const arr = [2, 4, 6, 8];
+const doubled = [];
+for (let i = 0; i < arr.length; i++){
+    doubled[i] = arr[i] * 2;
+}
+
+ * Declarative
+- Programmer tells "what to do".
+- We simply describe the way the computer should achieve te result
+- The HOW (step-by-step instructions)gets abstracted away.
+- Example: Description of a cake
+
+const arr = [2, 4, 6, 8];
+const doubled = arr.map(n => n * 2);
+ */
+
+/** FUNCTIONAL PROGRAMMING
+- Declarative programming paradigm.
+- Based on the idea of writing software by combining many pure functions, avoiding side effects and mutating data.
+- Side effect: Modification (mutation) of any data outside of the function (mutating eternal variables, logging to console, writing to DOM, etc).
+- Pure function: Function without side effects. Does not depend on external variables. Given the same inputs, always return the same outputs.
+- Immutability: State (data) is never modified! Instead, state is copied and the copy is mutated and returned.
+
+ ** FUNCTIONAL PROGRAMMING TECHNIQUES
+- Try to avoid data mutation.
+- Use built-in methods that don't produce side effects.
+- Do data transformations with methods such as .map(), .filter(), and .reduce();
+- Try to avoid side effects in functions. This is of course not always possible.
+
+ ** DECLARATIVE SYNTAX
+- Use array and objects destructuring;
+- Use the spread operator (...);
+- Use the ternary operator.
+- Use template literals.
+ */
