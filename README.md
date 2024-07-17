@@ -5,3 +5,6 @@ Course link: https://www.udemy.com/course/the-complete-javascript-course/
 
 To Test the Forkify App, make sure to request your API key here: https://forkify-api.herokuapp.com/
 and paste it into the config.js file on the "API_KEY" variable;
+
+The deployed version of the Forkify app is available on https://forkify-dspbasilio.netlify.app/.
+Netlify was used for the deploy.
